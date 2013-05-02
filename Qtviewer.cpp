@@ -1,5 +1,41 @@
 #include "Qtviewer.h"
 
+Qtviewer::Qtviewer(QWidget *parent): QWidget(parent)
+{
+    QHBoxLayout *layout_button = new QHBoxLayout;
+    QVBoxLayout *layout_main = new QVBoxLayout;
+   
+    QPushButton *next_page = new QPushButton(tr("&Next"));
+    QPushButton *prev_page = new QPushButton(tr("&Prev"));
+    QPushButton *first_page = new QPushButton(tr("&First"));
+    QPushButton *last_page = new QPushButton(tr("&Last"));
+    
+    image_current = new QLabel("");
+    name_scan = "";
+    path_scan = "";
+
+    num_page = new LineNumPage;
+   
+    connect(next_page, SIGNAL(clicked()), this, SLOT(go_next_page()));
+    connect(prev_page, SIGNAL(clicked()), this, SLOT(go_prev_page()));
+    connect(first_page, SIGNAL(clicked()), this, SLOT(go_first_page()));
+    connect(last_page, SIGNAL(clicked()), this, SLOT(go_last_page()));    
+    connect(num_page,SIGNAL(returnPressed()),this,SLOT(go_to_page()));
+ 
+    layout_button->addWidget(first_page);   
+    layout_button->addWidget(prev_page);
+    layout_button->addWidget(num_page);
+    layout_button->addWidget(next_page);   
+    layout_button->addWidget(last_page);
+
+    image_current->setAlignment(Qt::AlignCenter);    
+    layout_main->addWidget(image_current);
+    layout_main->addItem(layout_button);
+
+    setLayout(layout_main);  
+   
+}
+
 Qtviewer::Qtviewer(string pname_scan,int pnum_scan,QWidget *parent) :QWidget(parent),name_scan(pname_scan), num_scan(pnum_scan)
 {    
     QHBoxLayout *layout_button = new QHBoxLayout;
@@ -40,20 +76,21 @@ Qtviewer::Qtviewer(string pname_scan,int pnum_scan,QWidget *parent) :QWidget(par
 
 } 
 
-void Qtviewer::setScan(string name,int num,int last_dl)
+void Qtviewer::setScan(string name,int num)
 {
-    this->last_dl = last_dl;
-    name_scan = name;
-    num_scan = num;
-    curr_page = 0;
-    path_scan = PATH_SCANS+name+'/'+Easylast::itos(num)+'/';
-    
-    cout << last_dl << endl;
-    pages_scan = Easylast::list_pages_scan(path_scan);
-    
-    nb_page = pages_scan.size()-1;
+    if(Easylast::is_dir(PATH_SCANS+name+'/'+Easylast::itos(num)+'/'))
+    {
+	name_scan = name;
+	num_scan = num;
+	curr_page = 0;
+	path_scan = PATH_SCANS+name+'/'+Easylast::itos(num)+'/';
 
-    display_image_curr();
+	pages_scan = Easylast::list_pages_scan(path_scan);
+	
+	nb_page = pages_scan.size()-1;
+	
+	display_image_curr();
+    }
 }
 
 void Qtviewer::setQSummary(QSummaryManga *sum)
@@ -82,59 +119,62 @@ void Qtviewer::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
 
+    
     height_for_img =  image_current->height();
     width_for_img =  image_current->width();
-
-    display_image_curr();
-}
-
-
-void Qtviewer::closeEvent(QCloseEvent *event)
- {
-   
-     event->accept();
-     string cmd = "client_last --inc -t "+name_scan;
-     system(cmd.c_str());
     
+    if( name_scan != "")
+	display_image_curr();
+}
+	
+void Qtviewer::closeEvent(QCloseEvent *event)
+{
+    event->accept();
+    string cmd = "client_last --inc -t "+name_scan;
+    system(cmd.c_str());
+	
    
- }
+}
 
 void Qtviewer::go_next_page()
 {
     if (curr_page < nb_page)
     {
-	curr_page++;
-	display_image_curr();
-    }
+    curr_page++;
+    display_image_curr();
+}
     else
     {
-	if(SummManga != NULL)
+    emit nextScan(name_scan,num_scan);
+/*	if(SummManga != NULL)
 	{
-	    SummManga->setName(name_scan);
-	    SummManga->setChap(num_scan+1);
+	SummManga->setName(name_scan);
+	SummManga->setChap(num_scan+1);
 	}
 
 	map<string,string> infos_dl = Easylast::parse_info("DL");
 	
 	if(atoi(infos_dl[name_scan].c_str()) > num_scan)
 	{
-	     string cmd = "client_last --VU --inc -t "+name_scan;
-	     system(cmd.c_str());
-	     cout << "gfdgdfgd"<<endl;
+	string cmd = "client_last --VU --inc -t "+name_scan;
+	system(cmd.c_str());
+	cout << "gfdgdfgd"<<endl;
 	    
-	     new_scan();
+	new_scan();
 	     
 	}
-    }
+*/
+}
+
 }
 
 void Qtviewer::go_prev_page()
 {
     if(curr_page > 0)
     {
-	curr_page--;
-	display_image_curr();
-    }
+    curr_page--;
+    display_image_curr();
+}
 }
 
 void Qtviewer::go_first_page()
@@ -190,8 +230,8 @@ void Qtviewer::display_image(const string & path_img)
 
 void Qtviewer::display_image_curr()
 {
-     string path_img = path_scan+'/'+pages_scan[curr_page];
-
+    string path_img = path_scan+'/'+pages_scan[curr_page];
+    cout << path_img << endl;
     display_image(path_img);
     update_label();
 }

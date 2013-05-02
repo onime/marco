@@ -31,17 +31,20 @@ Q_OBJECT
 
 public:
 
+Qtviewer(QWidget *parent = NULL);
 Qtviewer(string name_scan,int num_page,QWidget *parent = NULL);
 void setQSummary(QSummaryManga *sum);
-void setScan(string name,int num,int last_ld);
+void setScan(string name,int num);
 
 protected:
-
 //method reimplemented
-
 void closeEvent(QCloseEvent *event);
 void keyPressEvent(QKeyEvent * event);
 void resizeEvent(QResizeEvent * event);
+
+signals:
+void nextScan(string name_cur,int chap_cur);
+
 
 public slots:
 
@@ -57,7 +60,6 @@ private:
 string path_scan;
 string name_scan;
 int num_scan;
-int last_dl;
 int curr_page;
 int nb_page;
 vector<string> pages_scan;

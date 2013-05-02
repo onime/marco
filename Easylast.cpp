@@ -103,6 +103,12 @@ vector<dirent *> Easylast::list_dir( const string &  path)
     return list_dir_scan;
 }
 
+bool Easylast::is_dir(string path)
+{
+    DIR* d = opendir(path.c_str());
+    return !(d == NULL);
+}
+
 string Easylast::itos(const int & i)
 {
     ostringstream oss;

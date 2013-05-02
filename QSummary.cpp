@@ -20,8 +20,9 @@ void QSummary::createWidget(QVBoxLayout *layout_main)
     QLabel *label_summary = new QLabel("Summary :");
     
     lsummary = new QTextEdit;
+//    lsummary->setFixedWidth(250);
     valid->setFixedWidth(100);
-   
+    
     connect(valid, SIGNAL(clicked()), this, SLOT(add_summary()));
     
     layout_main->addWidget(label_summary);

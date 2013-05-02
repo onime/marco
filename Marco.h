@@ -11,6 +11,7 @@
 #include <QList>
 #include <QHeaderView>
 #include <QAbstractItemView>
+#include <QRadioButton>
 #include <map>
 #include "QSummary.h"
 #include "Qtviewer.h"
@@ -25,8 +26,10 @@ Q_OBJECT
 public:
 Marco(QWidget *parent = 0);
 
+
 protected slots:
 
+void set_new_scan(string scan_cur,int num_cur);
 void simple_clicked_shows();
 void simple_clicked_scans();
 void double_clicked_shows(int row,int column);
@@ -36,6 +39,8 @@ private:
 map<string,string> infos_vu;
 map<string,string> infos_dl;
 
+QRadioButton *button_circular;
+QRadioButton *button_normal;
 QTableWidget *table_infos_scans;
 QTableWidget *table_infos_shows;
 Qtviewer *viewer;
