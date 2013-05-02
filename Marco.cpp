@@ -1,7 +1,5 @@
 #include "Marco.h"
-#include "Easylast.h"
-#include "QSummaryManga.h"
-#include "Qtviewer.h"
+
 
 Marco::Marco(QWidget *parent)
 {
@@ -11,8 +9,10 @@ Marco::Marco(QWidget *parent)
     QVBoxLayout *layout_infos = new QVBoxLayout;
     QHBoxLayout *layout_radio = new QHBoxLayout;
     QList<QString> header ;
-    QSummaryManga *sum_manga = new QSummaryManga;
-
+    
+    sum_manga = new QSummaryManga;
+    sum_show = new QSummaryShow;
+    
     button_circular = new QRadioButton("Circular");
     button_normal = new QRadioButton("Normal");
     
@@ -68,9 +68,7 @@ Marco::Marco(QWidget *parent)
     layout_infos->addWidget(table_infos_scans,1);
     layout_infos->addItem(layout_radio);
     layout_infos->addWidget(sum_manga);
-//    layout_infos->setMinimumSize(layout_infos->sizeHint());
-//    layout_infos->setMaximumSize(layout_infos->sizeHint());
-//    layout_infos->addStretch(110);
+
     layout_main->addLayout(layout_infos);
     // Le stretch est pour que le viewer utilise tout l'espace
     layout_main->addWidget(viewer,1);
@@ -83,7 +81,7 @@ void Marco::fill_table(map<string,string> infos)
 {
     int c_scan = 0,c_show = 0;
     string name,info;
-	    
+    
     for(map<string,string>::iterator i=infos.begin();i!=infos.end();i++)
     {
 	name = i->first;
@@ -116,6 +114,11 @@ void Marco::set_new_scan(string scan_cur,int num_cur)
     string cmd = "client_last --VU --inc -t "+scan_cur;
     int row_count = table_infos_scans->rowCount();
     system(cmd.c_str());
+    
+    sum_manga->setName(scan_cur);
+    sum_manga->setChap(num_cur);
+
+    summary = sum_manga;
 
     if(button_normal->isChecked())
     {

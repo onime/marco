@@ -14,7 +14,12 @@
 #include <QRadioButton>
 #include <map>
 #include "QSummary.h"
+#include "QSummaryManga.h"
+#include "QSummaryShow.h"
 #include "Qtviewer.h"
+#include "Easylast.h"
+
+
 
 using namespace std;
 
@@ -44,6 +49,9 @@ QRadioButton *button_normal;
 QTableWidget *table_infos_scans;
 QTableWidget *table_infos_shows;
 Qtviewer *viewer;
+QSummary *summary;
+QSummaryManga *sum_manga;
+QSummaryShow *sum_show;
 
 void fill_table(map<string,string> infos);
 };
