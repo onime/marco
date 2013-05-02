@@ -33,6 +33,7 @@ public:
 
 Qtviewer(string name_scan,int num_page,QWidget *parent = NULL);
 void setQSummary(QSummaryManga *sum);
+void setScan(string name,int num,int last_ld);
 
 protected:
 
@@ -56,6 +57,7 @@ private:
 string path_scan;
 string name_scan;
 int num_scan;
+int last_dl;
 int curr_page;
 int nb_page;
 vector<string> pages_scan;

@@ -119,3 +119,8 @@ QString Easylast::itoqs(const int & i)
 {
     return stoqs(itos(i));
 }
+
+int Easylast::stoi(const string & i)
+{
+    return atoi(i.c_str());
+}

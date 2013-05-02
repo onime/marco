@@ -33,6 +33,8 @@ void double_clicked_shows(int row,int column);
 void double_clicked_scans(int row,int column);
 
 private:
+map<string,string> infos_vu;
+map<string,string> infos_dl;
 
 QTableWidget *table_infos_scans;
 QTableWidget *table_infos_shows;

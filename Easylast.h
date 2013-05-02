@@ -28,6 +28,7 @@ static vector<dirent *> list_dir( const string & path);
 static vector<string> list_pages_scan(const string & path);
 
 static string itos(const int & i);
+static int stoi(const string & i);
 static QString stoqs(const string & s);
 static QString itoqs(const int & i);
     

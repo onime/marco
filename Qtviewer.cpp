@@ -40,6 +40,22 @@ Qtviewer::Qtviewer(string pname_scan,int pnum_scan,QWidget *parent) :QWidget(par
 
 } 
 
+void Qtviewer::setScan(string name,int num,int last_dl)
+{
+    this->last_dl = last_dl;
+    name_scan = name;
+    num_scan = num;
+    curr_page = 0;
+    path_scan = PATH_SCANS+name+'/'+Easylast::itos(num)+'/';
+    
+    cout << last_dl << endl;
+    pages_scan = Easylast::list_pages_scan(path_scan);
+    
+    nb_page = pages_scan.size()-1;
+
+    display_image_curr();
+}
+
 void Qtviewer::setQSummary(QSummaryManga *sum)
 {
     SummManga = sum;
@@ -92,14 +108,20 @@ void Qtviewer::go_next_page()
     }
     else
     {
+	if(SummManga != NULL)
+	{
+	    SummManga->setName(name_scan);
+	    SummManga->setChap(num_scan+1);
+	}
+
 	map<string,string> infos_dl = Easylast::parse_info("DL");
 	
 	if(atoi(infos_dl[name_scan].c_str()) > num_scan)
 	{
 	     string cmd = "client_last --VU --inc -t "+name_scan;
 	     system(cmd.c_str());
+	     cout << "gfdgdfgd"<<endl;
 	    
-	     SummManga->setChap(num_scan+1);
 	     new_scan();
 	     
 	}
@@ -142,12 +164,13 @@ void Qtviewer::new_scan()
     curr_page = 0;
 
     path_scan = PATH_SCANS+name_scan+'/'+Easylast::itos(num_scan);
+    cout << path_scan<<endl;
     pages_scan = Easylast::list_pages_scan(path_scan);
-    
+
     nb_page = pages_scan.size()-1;
 
     display_image_curr();
-
+    
 }
 
 void Qtviewer::display_image(const string & path_img)

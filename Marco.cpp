@@ -16,9 +16,11 @@ Marco::Marco(QWidget *parent)
 
     QSummaryManga *sum_manga = new QSummaryManga;
     viewer = new Qtviewer("Bleach",98);
+    viewer->setQSummary(sum_manga);
 
-    map<string,string> infos = Easylast::parse_info("VU");
-   
+    infos_vu = Easylast::parse_info("VU");
+    infos_dl = Easylast::parse_info("DL");
+
     table_infos_scans->setHorizontalHeaderLabels(QStringList(header));
     table_infos_scans->verticalHeader()->hide();
     
@@ -37,7 +39,7 @@ Marco::Marco(QWidget *parent)
     connect(table_infos_shows, SIGNAL(cellClicked(int,int)), this, SLOT(simple_clicked_shows()));
     connect(table_infos_scans, SIGNAL(cellClicked(int,int)), this, SLOT(simple_clicked_scans()));
 
-    fill_table(infos);
+    fill_table(infos_vu);
     
     layout_infos->addWidget(table_infos_shows);
     layout_infos->addWidget(table_infos_scans);
@@ -69,7 +71,12 @@ void Marco::fill_table(map<string,string> infos)
 	{
 	    table_infos_scans->insertRow(c_scan);
 	    table_infos_scans->setItem(c_scan,0,new QTableWidgetItem(Easylast::stoqs(name)));
-	    table_infos_scans->setItem(c_scan,1,new QTableWidgetItem(Easylast::stoqs(info)));
+	    table_infos_scans->setItem(c_scan,1,new QTableWidgetItem(Easylast::itoqs(atoi(info.c_str())+1)));
+
+	    if(Easylast::stoi(info)+1 <= Easylast::stoi(infos_dl[name]))
+		table_infos_scans->setItem(c_scan,2,new QTableWidgetItem("Ready"));
+	    else
+		table_infos_scans->setItem(c_scan,2,new QTableWidgetItem("Not Ready"));
 	    c_scan++;
 	}
 	
@@ -88,10 +95,12 @@ void Marco::simple_clicked_scans()
 
 void Marco::double_clicked_shows(int row,int column)
 {
-    cout << table_infos_shows->item(row,0)->text().toStdString() <<endl;
 }
 
 void Marco::double_clicked_scans(int row,int column)
 {
-    
+    string name = table_infos_scans->item(row,0)->text().toStdString();
+    int num = atoi(table_infos_scans->item(row,1)->text().toStdString().c_str());
+    cout <<name<<" "<< num<<endl;
+    viewer->setScan(name,num,atoi(infos_dl[name].c_str()));
 }
