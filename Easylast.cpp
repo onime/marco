@@ -73,23 +73,10 @@ string Easylast::find_summary(const string name,const int & chap)
     return ret;
 
 }
-vector<string> Easylast::list_pages_scan(const string & path)
+
+vector<string> Easylast::list_dir( const string &  path)
 {
-    vector<dirent *> list_file;
-    vector<string> list_name_img;
-    
-    list_file = list_dir(path);
-
-    for(vector<dirent *>::iterator i=list_file.begin();i!=list_file.end();++i)
-	list_name_img.push_back((*i)->d_name);
-
-    return list_name_img;
-}
-
-
-vector<dirent *> Easylast::list_dir( const string &  path)
-{
-    vector<dirent *> list_dir_scan;
+    vector<string> list_dir_scan;
     DIR* d = opendir(path.c_str());
     struct dirent *ent = NULL;
 
@@ -97,7 +84,10 @@ vector<dirent *> Easylast::list_dir( const string &  path)
     {
         if (strcmp(ent->d_name, ".") != 0 && 
             strcmp(ent->d_name, "..") != 0) 
-	    list_dir_scan.push_back(ent);
+	{
+//	    cout << ent->d_name << endl;
+	    list_dir_scan.push_back(ent->d_name);
+	}
     }
 
     return list_dir_scan;
@@ -129,4 +119,9 @@ QString Easylast::itoqs(const int & i)
 int Easylast::stoi(const string & i)
 {
     return atoi(i.c_str());
+}
+
+int Easylast::qstoi(const QString & i)
+{
+    return atoi(i.toStdString().c_str());
 }

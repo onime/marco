@@ -77,7 +77,7 @@ QVBoxLayout* QSummaryManga::createLayoutScan()
 void QSummaryManga::find_summary()
 {
     string summ = Easylast::find_summary(lscan->text().toStdString(),atoi(lchap->text().toStdString().c_str()));
-
+    cout << summ <<endl;
     lsummary->setText(Easylast::stoqs(summ));
 
 }
@@ -93,10 +93,12 @@ void QSummaryManga::add_summary()
     {
 	if( isNumber(textChap))
 	{
+	    cout << textSumm<<endl;
 	    if(Easylast::find_summary(textScan,atoi(textChap.c_str())) == "" )
 		cmd = "client_last --as -t \""+textScan+"\" -n "+textChap+" -s \""+textSumm+"\"";
 	    else
 		cmd = "client_last --us -t \""+textScan+"\" -n "+textChap+" -s \""+textSumm+"\"";
+	    
 
 	    if(system(cmd.c_str()) == 0)
 	    {

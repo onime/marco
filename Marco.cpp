@@ -3,22 +3,17 @@
 
 Marco::Marco(QWidget *parent)
 {
-/* Faire un constructeur vide pour le viewer */
 
     QHBoxLayout *layout_main = new QHBoxLayout;
     QVBoxLayout *layout_infos = new QVBoxLayout;
-    QHBoxLayout *layout_radio = new QHBoxLayout;
+    
     QList<QString> header ;
     
     sum_manga = new QSummaryManga;
     sum_show = new QSummaryShow;
     
-    button_circular = new QRadioButton("Circular");
-    button_normal = new QRadioButton("Normal");
-    
-    header << "Name" << "Next" << "Status";
+    header << "Name" << "Last" << "Next";
 
-    button_normal->setChecked(true);
     table_infos_scans = new QTableWidget(0,3);
     table_infos_shows = new QTableWidget(0,3);       
 
@@ -61,12 +56,9 @@ Marco::Marco(QWidget *parent)
 
     fill_table(infos_vu);
    
-    layout_radio->addWidget(button_normal);
-    layout_radio->addWidget(button_circular);
-    layout_radio->addStretch(1);
     layout_infos->addWidget(table_infos_shows,1);
     layout_infos->addWidget(table_infos_scans,1);
-    layout_infos->addItem(layout_radio);
+   
     layout_infos->addWidget(sum_manga);
 
     layout_main->addLayout(layout_infos);
@@ -86,6 +78,7 @@ void Marco::fill_table(map<string,string> infos)
     {
 	name = i->first;
 	info = i->second;
+
 	if(info[0] == 'S')
 	{
 	    table_infos_shows->insertRow(c_show);
@@ -97,48 +90,47 @@ void Marco::fill_table(map<string,string> infos)
 	{
 	    table_infos_scans->insertRow(c_scan);
 	    table_infos_scans->setItem(c_scan,0,new QTableWidgetItem(Easylast::stoqs(name)));
-	    table_infos_scans->setItem(c_scan,1,new QTableWidgetItem(Easylast::itoqs(atoi(info.c_str())+1)));
 
-	    if(Easylast::stoi(info)+1 <= Easylast::stoi(infos_dl[name]))
-		table_infos_scans->setItem(c_scan,2,new QTableWidgetItem("Ready"));
-	    else
-		table_infos_scans->setItem(c_scan,2,new QTableWidgetItem("Not Ready"));
+	    set_row_scan(c_scan,name,Easylast::stoi(info));
 	    c_scan++;
 	}
-    }
-	
+    }	
+}
+
+void Marco::set_row_scan(int row,string name_scan,int num_scan)
+{
+    table_infos_scans->setItem(row,1,new QTableWidgetItem(Easylast::itoqs(num_scan)));
+    
+    if(num_scan+1 <= Easylast::stoi(infos_dl[name_scan]))
+	table_infos_scans->setItem(row,2,new QTableWidgetItem(Easylast::itoqs(num_scan+1)+" Ready"));
+    else
+	table_infos_scans->setItem(row,2,new QTableWidgetItem(Easylast::itoqs(num_scan+1)+" Not Ready"));
 }
 
 void Marco::set_new_scan(string scan_cur,int num_cur)
 {
     string cmd = "client_last --VU --inc -t "+scan_cur;
     int row_count = table_infos_scans->rowCount();
-    system(cmd.c_str());
-    
+              
     sum_manga->setName(scan_cur);
     sum_manga->setChap(num_cur);
 
     summary = sum_manga;
 
-    if(button_normal->isChecked())
+    if(num_cur > Easylast::stoi(infos_vu[scan_cur]))
     {
-	if(num_cur < Easylast::stoi(infos_dl[scan_cur]))
-	    viewer->setScan(scan_cur,num_cur+1);
-	else
-	{
-	    int curr_row = table_infos_scans->currentRow();
-	    if(curr_row < row_count)
-	    {
-		string new_name = table_infos_scans->item(curr_row+1,0)->text().toStdString();
-		int new_num = Easylast::stoi(table_infos_scans->item(curr_row+1,1)->text().toStdString());
-		table_infos_scans->setCurrentCell(curr_row+1,0);
-		viewer->setScan(new_name,new_num);
-	    }
-	}
+	for(int i = 0;i<table_infos_scans->rowCount();i++)
+	    
+	    if(table_infos_scans->item(i,0)->text().toStdString() == scan_cur)
+		set_row_scan(i,scan_cur,num_cur);
+
+        system(cmd.c_str());
     }
-    
-    if(button_circular->isChecked())
-    {
+
+    if(num_cur < Easylast::stoi(infos_dl[scan_cur]))	
+	viewer->setScan(scan_cur,num_cur+1);
+    else
+    {	   
 	int curr_row = table_infos_scans->currentRow();
 	if(curr_row < row_count)
 	{
@@ -148,6 +140,8 @@ void Marco::set_new_scan(string scan_cur,int num_cur)
 	    viewer->setScan(new_name,new_num);
 	}
     }
+  
+    
     
 
 }

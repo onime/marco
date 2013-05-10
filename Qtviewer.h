@@ -9,7 +9,6 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
 #include <QPixmap>
@@ -18,6 +17,8 @@
 #include <QResizeEvent>
 #include <QFocusEvent>
 #include <QCloseEvent>
+#include <QListWidget>
+#include <QListWidgetItem>
 #include "LineNumPage.h"
 #include "QSummaryManga.h"
 #include "Easylast.h"
@@ -38,7 +39,7 @@ void setScan(string name,int num);
 
 protected:
 //method reimplemented
-void closeEvent(QCloseEvent *event);
+
 void keyPressEvent(QKeyEvent * event);
 void resizeEvent(QResizeEvent * event);
 
@@ -48,11 +49,13 @@ void nextScan(string name_cur,int chap_cur);
 
 public slots:
 
-void go_next_page();
-void go_prev_page();
-void go_first_page();
-void go_last_page();
-void go_to_page();
+void btn_next_page();
+void btn_prev_page();
+void btn_first_page();
+void btn_last_page();
+void txt_go_page();
+void list_go_scan();
+void list_go_page();
 
 private:
 
@@ -68,12 +71,17 @@ int height_for_img;
 int width_for_img;
 
 LineNumPage *num_page;
+QLineEdit *ql_num_scan;
 QLabel *image_current;
-
+QLabel *label_cur_scan;
+QListWidget *list_dir_scan;
+QListWidget *list_dir_page;
 QSummaryManga *SummManga;
 //method
 
-void new_scan();
+void clear_lists();
+void fill_list_page();
+void fill_lists();
 void display_image(const string & path_img);
 void display_image_curr();
 void update_label();
